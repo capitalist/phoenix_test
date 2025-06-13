@@ -2,8 +2,6 @@ import Config
 
 config :phoenix_test, :endpoint, PhoenixTest.WebApp.Endpoint
 
-config :logger, level: :warning
-
 config :phoenix_test, PhoenixTest.WebApp.Endpoint,
   server: true,
   http: [port: 4000],
@@ -15,7 +13,7 @@ config :phoenix_test, PhoenixTest.WebApp.Endpoint,
     layout: false
   ]
 
-config :logger, level: :error
+config :logger, level: :debug
 
 config :esbuild,
   version: "0.17.11",

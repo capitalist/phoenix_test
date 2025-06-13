@@ -34,6 +34,7 @@ defmodule PhoenixTest.WebApp.OrdinalInputsLive do
 
   import PhoenixTest.WebApp.Components
 
+  alias Phoenix.LiveView.JS
   alias PhoenixTest.WebApp.MailingList
 
   def mount(_params, _session, socket) do
@@ -52,17 +53,29 @@ defmodule PhoenixTest.WebApp.OrdinalInputsLive do
     ~H"""
     <.form for={@form} phx-change="validate" phx-submit="submit">
       <.input field={@form[:title]} label="Title" />
+      <button
+        type="button"
+        name="mailing_list[emails_sort][]"
+        value="new"
+        phx-click={JS.dispatch("change")}
+      >
+        Add Email
+      </button>
       <.inputs_for :let={ef} field={@form[:emails]}>
         <input type="hidden" name="mailing_list[emails_sort][]" value={ef.index} />
         <.input label="Email" type="text" field={ef[:email]} placeholder="email" />
-        <a class="underline" phx-click="remove-email" phx-value-index={ef.index}>
+        <button
+          type="button"
+          name="mailing_list[emails_drop][]"
+          value={ef.index}
+          phx-click={JS.dispatch("change")}
+        >
           Remove
-        </a>
+        </button>
       </.inputs_for>
 
       <input type="hidden" name="mailing_list[emails_drop][]" />
 
-      <button phx-click="add-email">Add Email</button>
       <button type="submit">Submit</button>
     </.form>
 
@@ -80,31 +93,8 @@ defmodule PhoenixTest.WebApp.OrdinalInputsLive do
 
   def handle_event("validate", %{"mailing_list" => params}, socket) do
     changeset = MailingList.changeset(%MailingList{}, params)
+
     {:noreply, assign(socket, changeset: changeset, form: to_form(changeset))}
-  end
-
-  def handle_event("add-email", _params, socket) do
-    changeset = socket.assigns.changeset
-
-    new_emails =
-      Ecto.Changeset.get_field(changeset, :emails) ++ [%MailingList.Email{}]
-
-    updated_changeset =
-      MailingList.changeset(%{changeset.data | emails: new_emails}, %{})
-
-    {:noreply, assign(socket, changeset: updated_changeset, form: to_form(updated_changeset))}
-  end
-
-  def handle_event("remove-email", %{"index" => index}, socket) do
-    index = String.to_integer(index)
-    current_emails = Ecto.Changeset.get_field(socket.assigns.changeset, :emails)
-
-    new_emails = List.delete_at(current_emails, index)
-
-    updated_changeset =
-      MailingList.changeset(%{socket.assigns.changeset.data | emails: new_emails}, %{})
-
-    {:noreply, assign(socket, changeset: updated_changeset, form: to_form(updated_changeset))}
   end
 
   def handle_event("submit", %{"mailing_list" => params}, socket) do

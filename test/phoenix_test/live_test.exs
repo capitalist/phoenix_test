@@ -983,7 +983,7 @@ defmodule PhoenixTest.LiveTest do
       |> fill_in("#mailing_list_emails_1_email", "Email", with: "Muffins")
       |> click_button("Add Email")
       |> fill_in("#mailing_list_emails_2_email", "Email", with: "Arrows")
-      |> click_link("a[phx-value-index='1']", "Remove")
+      |> click_button("button[value='1']", "Remove")
       |> submit()
       |> assert_has("[data-role=email]", text: "Bow")
       |> assert_has("[data-role=email]", text: "Arrows")
