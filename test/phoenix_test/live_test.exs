@@ -964,6 +964,15 @@ defmodule PhoenixTest.LiveTest do
   end
 
   describe "general form logic" do
+    test "handles normal phx-submit", %{conn: conn} do
+      conn
+      |> visit("/live/simple_ordinal_inputs")
+      |> fill_in("Title", with: "Fellowship")
+      |> fill_in("#simple_mailing_list_emails_0_email", "Email", with: "Bow")
+      |> submit()
+      |> assert_has("[data-role=email]", text: "Bow")
+    end
+
     test "handles inputs_for ordinal inputs", %{conn: conn} do
       conn
       |> visit("/live/ordinal_inputs")
